@@ -12,22 +12,26 @@ class CurrencyConverter:
     def get_price(quote: str, base: str, amount: str):
         # Если в одном сообщении 2 раза введена одинаковая валюта
         if quote == base:
-            raise ConvertionException('Пожалуйста вводите разную валюту,\nпример для ввода: доллар рубль 100')
+            raise ConvertionException('Пожалуйста вводите разную валюту, '
+                                      'пример для ввода: доллар рубль 100')
         # Если первой валюты нет в словаре
         try:
             quote_ticker = keys[quote]
         except KeyError:
-            raise ConvertionException(f'Не удалось обработать валюту "{quote}", проверьте значения в /value')
+            raise ConvertionException(f'Не удалось обработать валюту "{quote}", '
+                                      f'проверьте значения в /values')
         # Если второй валюты нет в словаре
         try:
             base_ticker = keys[base]
         except KeyError:
-            raise ConvertionException(f'Не удалось обработать валюту "{base}", проверьте значения в /value')
+            raise ConvertionException(f'Не удалось обработать валюту "{base}", '
+                                      f'проверьте значения в /values')
         # Если в количество введена не цифра
         try:
             amount = float(amount)
         except ValueError:
-            raise ConvertionException(f'Не удалось обработать количество "{amount}", пример для ввода: доллар рубль 100')
+            raise ConvertionException(f'Не удалось обработать количество "{amount}", '
+                                      f'пример для ввода: доллар рубль 100')
 
         # Отправляем запрос, подставляя нужные переменные из словаря keys
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
