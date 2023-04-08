@@ -1,30 +1,43 @@
 import telebot
 import requests
+import json
 from config import TOKEN
 
 
 bot = telebot.TeleBot(TOKEN)
 # Словарь с доступными валютами
-keys = {'USD': 'Доллар', 'EUR': 'Евро', 'RUB': 'Рубль'}
+keys = {'Доллар': 'USD', 'Евро': 'EUR', 'Рубль': 'RUB'}
 
 
 # Приветственное сообщение
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
     bot.send_message(message.chat.id, f'Привет, {message.chat.username.capitalize()}, '
-                          f'чтобы начать работу пришли мне <имя валюты> '
-                          f'<в какую валюту перевести> <количество переводимой валюты>'
-                          f'\nНапример: доллар рубль 100'
-                          f'\nУвидеть список всех доступных валют: /values')
+                                      'чтобы начать работу пришли мне <имя валюты> '
+                                      '<в какую валюту перевести> <количество переводимой валюты>'
+                                      '\nНапример: доллар рубль 100'
+                                      '\nУвидеть список всех доступных валют: /values')
 
 
 # Команда /value отправляет список всех доступных валют
 @bot.message_handler(commands=['values'])
 def values(message):
     text = 'Доступные валюты: '
-    for key in keys.values():
+    for key in keys.keys():
         text += f'{key}, '
+    # Приводим список доступных валют в читаемый вид
     bot.send_message(message.chat.id, text[:-2])
+
+
+@bot.message_handler(content_types=['text'])
+def convert(message):
+    # Составляем список переменных, избавляемся от реестро-зависимости
+    quote, base, amount = list(map(lambda x: x.capitalize(), message.text.split(' ')))
+    # Отправлем запрос, подставляя нужные переменные из словаря keys
+    r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
+                     f'fsym='f'{keys[quote]}&tsyms={keys[base]}')
+    text = json.loads(r.content)[keys[base]]
+    bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(content_types=['photo'])
