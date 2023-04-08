@@ -9,7 +9,7 @@ class ConvertionException(Exception):
 
 class CurrencyConverter:
     @staticmethod
-    def convert(quote: str, base: str, amount: str):
+    def get_price(quote: str, base: str, amount: str):
         # Если в одном сообщении 2 раза введена одинаковая валюта
         if quote == base:
             raise ConvertionException('Пожалуйста вводите разную валюту,\nпример для ввода: доллар рубль 100')

@@ -38,7 +38,7 @@ def convert(message):
         # Составляем список переменных, избавляемся от реестро-зависимости
         quote, base, amount = list(map(lambda x: x.capitalize(), values))
         # Получаем результат и необходимые для сообщения переменные
-        result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
+        result, text, quote_ticker, base_ticker = CurrencyConverter.get_price(quote, base, amount)
     # Обработка ошибок пользователя
     except ConvertionException as e:
         bot.send_message(message.chat.id, f'Упс, вы ошиблись =(\n{e}')
