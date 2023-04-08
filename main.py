@@ -30,24 +30,24 @@ def values(message):
 @bot.message_handler(content_types=['text'])
 def convert(message):
     try:
+        # Получаем переменные из сообщения
         values = message.text.split(' ')
+        # Проверяем, что введено верное количество переменных
         if len(values) != 3:
             raise ConvertionException('Неверное количество параметров, пример для ввода: доллар рубль 100')
         # Составляем список переменных, избавляемся от реестро-зависимости
         quote, base, amount = list(map(lambda x: x.capitalize(), values))
+        # Получаем результат и необходимые для сообщения переменные
         result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
+    # Обработка ошибок пользователя
     except ConvertionException as e:
         bot.send_message(message.chat.id, f'Упс, вы ошиблись =(\n{e}')
+    # Обработка ошибок сервера
     except Exception as e:
         bot.send_message(message.chat.id, f'Со мной что-то не так =(\n{e}')
     else:
         bot.send_message(message.chat.id, f'За 1 {quote} вы можете купить {text} {base}'
                                           f'\nИтого {amount} {quote_ticker} = {result} {base_ticker}')
-
-
-@bot.message_handler(content_types=['photo'])
-def handle_photo(message):
-    bot.reply_to(message, 'Nice meme XDD')
 
 
 bot.polling(none_stop=True)
