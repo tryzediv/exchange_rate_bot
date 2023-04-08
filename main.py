@@ -1,12 +1,10 @@
 import telebot
 import requests
 import json
-from config import TOKEN
+from config import TOKEN, keys
 
 
 bot = telebot.TeleBot(TOKEN)
-# Словарь с доступными валютами
-keys = {'Доллар': 'USD', 'Евро': 'EUR', 'Рубль': 'RUB'}
 
 
 # Приветственное сообщение
@@ -37,8 +35,9 @@ def convert(message):
     r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
                      f'fsym='f'{keys[quote]}&tsyms={keys[base]}')
     text = json.loads(r.content)[keys[base]]
-    bot.send_message(message.chat.id, f'За 1 {quote} мы можете купить {text} {base}'
-                                      f'\nИтого {amount} {keys[quote]} = {float(amount) * float(text)} {keys[base]}')
+    result = round(float(amount) * float(text), 2)
+    bot.send_message(message.chat.id, f'За 1 {quote} вы можете купить {text} {base}'
+                                      f'\nИтого {amount} {keys[quote]} = {result} {keys[base]}')
 
 
 @bot.message_handler(content_types=['photo'])
