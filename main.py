@@ -1,7 +1,6 @@
 import telebot
-import requests
-import json
-from config import TOKEN, keys
+from config import TOKEN
+from currency import keys
 from extensions import ConvertionException, CurrencyConverter
 
 
@@ -30,18 +29,20 @@ def values(message):
 
 @bot.message_handler(content_types=['text'])
 def convert(message):
-    values = message.text.split(' ')
-
-    if len(values) != 3:
-        raise ConvertionException('Слишком много параметров,\nпример для ввода: доллар рубль 100')
-
-    # Составляем список переменных, избавляемся от реестро-зависимости
-    quote, base, amount = list(map(lambda x: x.capitalize(), values))
-
-    result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
-
-    bot.send_message(message.chat.id, f'За 1 {quote} вы можете купить {text} {base}'
-                                      f'\nИтого {amount} {quote_ticker} = {result} {base_ticker}')
+    try:
+        values = message.text.split(' ')
+        if len(values) != 3:
+            raise ConvertionException('Слишком много параметров, пример для ввода: доллар рубль 100')
+        # Составляем список переменных, избавляемся от реестро-зависимости
+        quote, base, amount = list(map(lambda x: x.capitalize(), values))
+        result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
+    except ConvertionException as e:
+        bot.send_message(message.chat.id, f'Упс, вы ошиблись =(\n{e}')
+    except Exception as e:
+        bot.send_message(message.chat.id, f'Со мной что-то не так =(\n{e}')
+    else:
+        bot.send_message(message.chat.id, f'За 1 {quote} вы можете купить {text} {base}'
+                                          f'\nИтого {amount} {quote_ticker} = {result} {base_ticker}')
 
 
 @bot.message_handler(content_types=['photo'])

@@ -1,4 +1,4 @@
-from config import keys
+from currency import keys
 import requests
 import json
 
@@ -16,17 +16,17 @@ class CurrencyConverter:
         try:
             quote_ticker = keys[quote]
         except KeyError:
-            raise ConvertionException(f'Не удалось обработать валюту {quote}, проверьте значения в /value')
+            raise ConvertionException(f'Не удалось обработать валюту "{quote}", проверьте значения в /value')
 
         try:
             base_ticker = keys[base]
         except KeyError:
-            raise ConvertionException(f'Не удалось обработать валюту {base}, проверьте значения в /value')
+            raise ConvertionException(f'Не удалось обработать валюту "{base}", проверьте значения в /value')
 
         try:
             amount = float(amount)
         except ValueError:
-            raise ConvertionException(f'Не удалось обработать количество {amount}, проверьте значения в /value')
+            raise ConvertionException(f'Не удалось обработать количество "{amount}", проверьте значения в /value')
 
         # Отправляем запрос, подставляя нужные переменные из словаря keys
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
