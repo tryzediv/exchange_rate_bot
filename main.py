@@ -32,7 +32,7 @@ def convert(message):
     try:
         values = message.text.split(' ')
         if len(values) != 3:
-            raise ConvertionException('Слишком много параметров, пример для ввода: доллар рубль 100')
+            raise ConvertionException('Неверное количество параметров, пример для ввода: доллар рубль 100')
         # Составляем список переменных, избавляемся от реестро-зависимости
         quote, base, amount = list(map(lambda x: x.capitalize(), values))
         result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
