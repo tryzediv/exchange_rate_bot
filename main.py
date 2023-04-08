@@ -37,7 +37,8 @@ def convert(message):
     r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
                      f'fsym='f'{keys[quote]}&tsyms={keys[base]}')
     text = json.loads(r.content)[keys[base]]
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, f'За 1 {quote} мы можете купить {text} {base}'
+                                      f'\nИтого {amount} {keys[quote]} = {float(amount) * float(text)} {keys[base]}')
 
 
 @bot.message_handler(content_types=['photo'])
