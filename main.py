@@ -4,10 +4,11 @@ from config import TOKEN
 
 
 bot = telebot.TeleBot(TOKEN)
-
+# Словарь с доступными валютами
 keys = {'USD': 'Доллар', 'EUR': 'Евро', 'RUB': 'Рубль'}
 
 
+# Приветственное сообщение
 @bot.message_handler(commands=['start', 'help'])
 def handle_start_help(message):
     bot.send_message(message.chat.id, f'Привет, {message.chat.username.capitalize()}, '
@@ -17,6 +18,7 @@ def handle_start_help(message):
                           f'\nУвидеть список всех доступных валют: /values')
 
 
+# Команда /value отправляет список всех доступных валют
 @bot.message_handler(commands=['values'])
 def values(message):
     text = 'Доступные валюты: '
