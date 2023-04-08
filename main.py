@@ -2,7 +2,7 @@ import telebot
 import requests
 import json
 from config import TOKEN, keys
-from extensions import ConvertionException
+from extensions import ConvertionException, CurrencyConverter
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -32,29 +32,14 @@ def values(message):
 def convert(message):
     values = message.text.split(' ')
 
-    if len(values) > 3:
+    if len(values) != 3:
         raise ConvertionException('Слишком много параметров,\nпример для ввода: доллар рубль 100')
 
     # Составляем список переменных, избавляемся от реестро-зависимости
     quote, base, amount = list(map(lambda x: x.capitalize(), values))
 
-    if quote == base:
-        raise ConvertionException('Пожалуйста вводите разную валюту,\nпример для ввода: доллар рубль 100')
+    result, text, quote_ticker, base_ticker = CurrencyConverter.convert(quote, base, amount)
 
-    try:
-        quote_ticker = keys[quote]
-    except KeyError:
-        raise ConvertionException(f'Не удалось обработать валюту {quote}, проверьте значения в /value')
-
-    try:
-        base_ticker = keys[base]
-    except KeyError:
-        raise ConvertionException(f'Не удалось обработать валюту {base}, проверьте значения в /value')
-    # Отправлем запрос, подставляя нужные переменные из словаря keys
-    r = requests.get(f'https://min-api.cryptocompare.com/data/price?'
-                     f'fsym='f'{quote_ticker}&tsyms={base_ticker}')
-    text = json.loads(r.content)[keys[base]]
-    result = round(float(amount) * float(text), 2)
     bot.send_message(message.chat.id, f'За 1 {quote} вы можете купить {text} {base}'
                                       f'\nИтого {amount} {quote_ticker} = {result} {base_ticker}')
 
